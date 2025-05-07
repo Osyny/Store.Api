@@ -24,12 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="AutoMapper\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Store.Core\Store.Core.csproj" />
   </ItemGroup>
 
