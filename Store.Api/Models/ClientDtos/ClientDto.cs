@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Store.Api.Models.ClientDtos
 {
-    public class ClientDto
+    public class ClientDto : EntityDto
     {
         [Required]
         public string Surname { get; set; }
