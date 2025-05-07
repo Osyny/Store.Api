@@ -15,6 +15,17 @@ namespace Store.Core
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<PositionOrder> PositionOrders { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Product>()
+                .HasIndex(u => u.Article)
+                .IsUnique();
+
+            builder.Entity<Order>()
+               .HasIndex(u => u.Number)
+               .IsUnique();
+        }
     }
 
 }

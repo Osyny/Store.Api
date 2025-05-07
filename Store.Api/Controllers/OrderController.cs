@@ -6,6 +6,7 @@ using Store.Core;
 using Store.Api.Models;
 using Store.Api.Models.OrderDtos;
 using Microsoft.EntityFrameworkCore;
+using Azure.Core;
 
 namespace Store.Api.Controllers
 {
@@ -58,5 +59,27 @@ namespace Store.Api.Controllers
                   new Response { IsSuccess = true, Message = $"Order created successfully!!!" });
 
         }
+
+        [HttpGet("last-orders")]
+        public async Task<IActionResult> GetLastOrdersByDays([FromQuery] int numberDays)
+        {
+            var date = DateTime.Now.Date.AddDays(-numberDays);
+
+            var lastOrders = await _dbContext.Orders
+                   .Include(p => p.Client)
+                .Where(o => o.Date >= date)
+                .GroupBy(o => new { o.ClientId, o.Client.Surname, o.Client.Name, o.Client.FatherName })
+                .Select(g => new ClientLastOrderDto
+                {
+                    Id = g.Key.ClientId,
+                    FullName = $"{g.Key.Surname} {g.Key.Name} {g.Key.FatherName}",
+                    DateLastOrder = g.Max(p => p.Date)
+                })
+                .OrderByDescending(x => x.DateLastOrder)
+                .ToListAsync();
+
+            return Ok(lastOrders);
+        }
+
     }
 }

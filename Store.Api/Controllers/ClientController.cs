@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Store.Api.Models;
 using Store.Api.Models.ClientDtos;
+using Store.Api.Models.OrderDtos;
 using Store.Core;
 using Store.Core.Entities;
 
@@ -45,6 +46,40 @@ namespace Store.Api.Controllers
             return StatusCode(StatusCodes.Status500InternalServerError,
             new Response { Status = "Error", Message = "This Client already  exist!" });
 
+        }
+
+        [HttpGet("birthdays/{date}")]
+        public async Task<IActionResult> GetBirthdays([FromQuery] DateTime date)
+        {
+            var result = await _dbContext.Clients
+               .Where(c => c.Birthday.Day == date.Day && c.Birthday.Month == date.Month)
+               .Select(c => new BitthdayDto
+               {
+                   Id = c.Id,
+                   FullName = c.FullName
+               })
+               .ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("client-categories/{clientId}")]
+        public async Task<IActionResult> GetCategoriesByClientId(int clientId)
+        {
+            var result = await _dbContext.PositionOrders
+                    .Include(p => p.Product)
+               .Where(p => p.Order.ClientId == clientId)
+               .GroupBy(p => new { p.Product.CategoryId, p.Product.Category.Name})
+               .Select(p => new ClientCategoriesDto
+               {
+                   CategoryId = p.Key.CategoryId,
+                   CategoryName = p.Key.Name,
+                   Count = p.Sum(po => po.CountProduct)
+               })
+               .ToListAsync();
+
+
+            return Ok(result);
         }
     }
 }
