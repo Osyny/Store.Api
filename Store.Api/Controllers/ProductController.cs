@@ -25,6 +25,14 @@ namespace Store.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProductDto input)
         {
+            var existByArticle = await _dbContext.Products.AsNoTracking()
+              .FirstOrDefaultAsync(c => c.Article.ToUpper().Trim() == input.Article.ToUpper().Trim());
+            if (existByArticle != null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Response { Status = "Error", Message = "Article order already exist!" });
+            }
+
             var product = await _dbContext.Products.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Name.ToUpper().Trim() == input.Name.ToUpper().Trim());
 
