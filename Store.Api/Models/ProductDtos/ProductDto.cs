@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Store.Api.Models.ProductDtos
 {
-    public class ProductDto
+    public class ProductDto : EntityDto
     {
         [Required]
         public required string Name { get; set; }

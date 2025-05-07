@@ -23,5 +23,7 @@ namespace Store.Core.Entities
         [Required]
         [Precision(12, 2)]
         public decimal TotalCost { get; set; }
+
+        public List<PositionOrder> Positions { get; set; }
     }
 }
